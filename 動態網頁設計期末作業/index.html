@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Cart</title>
+    <link rel="shortcut icon" type="image/x-icon" href="./favicon.ico" />
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+  </head>
+<body>
+    <div id="app">
+      <!--後臺控制-->
+      <div class="backcorcal">
+        <h4>後臺控制<input type="checkbox" v-model="soldOut"></p>
+      </div>
+      <!--控制台，可控制電影庫存-->
+      <div class="controlmovie" v-if="soldOut">
+        <h1>控制台</h1>
+        <!--控制台內容-->
+        <div class="controlcontent"  v-for="movie in movies">     
+          <h2> {{movie.name}} </h2>
+          <h2> 庫存: <input v-model.number="movie.store" type="number"> </h2>
+          <h3 v-model="abccd(movie)"></h3>
+        </div>
+      </div>
+      <div class="title">Movie Ordering</div>
+      <!--查詢-->
+      <div class="search">
+        <h2>搜尋:<input type="text" v-model="query" placeholder="Search..."> </h2>
+      </div>
+      <div class="control" v-if="isCartOpen">
+        <div class="panel">
+          <h2> Movie Cart </h2>
+          <ul>
+            <li v-for="(movie,mid) in cart">
+              <div class="thumbnail" :style="bgcss(movie.cover)"></div>
+              <h3>{{movie.name}}
+                <!-- 電影數量 -->
+                <button class="add" @click="reducemovie(movie)">
+                  <span class="material-symbols-outlined">minimize</span>
+                </button>
+                <div class="QTYinCart">{{movie.QTYinCart}}</div>
+                <button class="add" @click="addmovie(movie)">
+                  <span class="material-symbols-outlined">add</span>
+                </button>
+                
+                <div class="price">${{movie.price*movie.QTYinCart}}</div>
+                <button class="delete" @click="delate(movie)">
+                  <span class="material-symbols-outlined">
+                    delete
+                    </span>
+                </button>
+              </h3>
+            </li>
+            <!--當購物車為空時顯示Empty Cart-->
+            <li v-if="!cart.length">
+              <h3>Empty Cart</h3>
+            </li>
+          </ul>
+          <hr>
+          <div class="total">
+            <h3>Total</h3>
+            <h3>${{totalPrice}}</h3>
+          </div>
+          <!--完全清空置物車內的所有內容-->
+          <button class="clear" @click="clearCart">Clear Cart</button>
+          <!--新增一個畫面，顯示所有訂購的數量與目前的總金額-->
+          <button class="clear" @click="showOrder = !showOrder">Check out</button>
+          <!--顯示-->
+          <div class="showallprice" v-if="showOrder">
+            <h3>訂購數量: {{allmovie}}</h3>
+            <h3>總金額: ${{totalPrice}}</h3>
+          </div>
+        </div>
+      </div>
+      <div class="movie" @wheel.prevent="wheel($event)">
+        <div class="cards">
+          <div class="nomovie" v-if="filteredMovies.length === 0">
+            <p>無此影片</p>
+          </div> 
+          <div class="message" v-if="errormessage == true">
+            <p>超過庫存上限!</p>
+          </div>
+          <div class="card"  v-for="movie in filteredMovies">     
+            <div class="left">
+              <div class="cover" :style="bgcss(movie.cover)"></div>
+            </div>           
+            <div class="right">
+              <h2> {{movie.name}} </h2>
+            <h4> {{movie.type}} </h4>
+            <p v-html="movie.description"></p>
+            <div class="price">$ {{movie.price}}</div>
+            <div class="price">庫存: {{movie.store}}</div>
+            <h3 v-model="QTYabc(movie)"></h3>
+            QTY <input v-model.number="movie.QTY" type="number">
+            
+            <button class="add" @click="addCart(movie, $event)">+ Add To Cart</button>
+            </div>
+          </div>    
+        </div>
+      </div>
+      <div class="buybox" :style="bgcss(currentMovie.cover)" v-if="currentMovie"></div>
+      <div class="fixed-control" @click="isCartOpen=!isCartOpen ;showOrder = false">
+        <i class="fa fa-shopping-cart"></i>
+        <span>{{allmovie}}</span>
+    </div>
+    
+      
+    </div>
+    <!-- Script List-->
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js'></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.11/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="./script.js"></script>
+</body>
+</html>
